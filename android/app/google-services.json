@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "773717459757",
+    "project_id": "proton17092000",
+    "storage_bucket": "proton17092000.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:773717459757:android:d3a92858ab49e1c28c89a4",
+        "android_client_info": {
+          "package_name": "com.example.proton"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "773717459757-u41ij2ahc1hl68l3oj7vbjkpqbgeh548.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.proton",
+            "certificate_hash": "4f7a0d5c661e7b5e918d67cf4cc13afb964882e9"
+          }
+        },
+        {
+          "client_id": "773717459757-h74a0l5dkle2kke8fhi5pb1i8f2ra7cr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1i_O4SWo6aOLTcAIn-7Ab4mkJFD_HfeU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "773717459757-h74a0l5dkle2kke8fhi5pb1i8f2ra7cr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "773717459757-grkk0569lbd4orn8etkrlb39torksrmk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.proton"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

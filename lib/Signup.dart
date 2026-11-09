@@ -19,8 +19,9 @@ Future<void> main() async {
         appId: "1:773717459757:web:54afab1d5430469d8c89a4",
         messagingSenderId: "773717459757",
         projectId: "proton17092000"));
+  } else {
+    await Firebase.initializeApp();
   }
-  await Firebase.initializeApp();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -101,11 +102,7 @@ class SignupState extends State<Signup>{
                                 return "Invalid Email format";
                               }
                               else {
-                                firestore.collection("SI users").add({
-                                  "Username" : _usernameController.text,
-                                  "Email" : _emailController.text,
-                                  "Password" : _passwordController.text,
-                                });
+                                return null;
                               }
                             },textInputAction: TextInputAction.next,style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,fontFamily: 'SF compact')),
                         ),
@@ -169,6 +166,11 @@ class SignupState extends State<Signup>{
           child: SizedBox(height: 90.w,width: 90.w, child: ElevatedButton(onPressed: () async {
             if (_formKey.currentState!.validate()) {
               try {
+                 await firestore.collection("SI users").add({
+                   "Username" : _usernameController.text,
+                   "Email" : _emailController.text,
+                   "Password" : _passwordController.text,
+                 });
                  await FirebaseAuth.instance.createUserWithEmailAndPassword(
                     email: _emailController.text,
                     password: _passwordController.text)

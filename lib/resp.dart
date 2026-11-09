@@ -15,8 +15,9 @@ Future<void> main() async {
         appId: "1:773717459757:web:54afab1d5430469d8c89a4",
         messagingSenderId: "773717459757",
         projectId: "proton17092000"));
+  } else {
+    await Firebase.initializeApp();
   }
-  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 

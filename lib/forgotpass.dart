@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -39,10 +38,10 @@ class Forpass extends StatefulWidget{
 }
 
 class ForpassState extends State<Forpass>{
-  RegExp pass_valid = RegExp(r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)");
+  RegExp passValid = RegExp(r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)");
   bool validatePassword(String pass){
     String password = pass.trim();
-    if(pass_valid.hasMatch(password)){
+    if(passValid.hasMatch(password)){
       return true;
     }else{
       return false;
@@ -51,24 +50,24 @@ class ForpassState extends State<Forpass>{
 
   final _formKey = GlobalKey<FormState>();
   String errorMessage = '';
-  String Message = '';
+  String message = '';
   final TextEditingController _emailController = TextEditingController();
 
 
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context);
-    var _mediaQuery = MediaQuery.of(context);
+    var mediaQuery = MediaQuery.of(context);
     return Scaffold(body: Stack(children: [ Container(decoration: const BoxDecoration(image: DecorationImage(image: AssetImage('Assets/Images/b2.jpg'),fit: BoxFit.cover)),),
       SingleChildScrollView(child: Column( children: [ Center(child: Padding(
         padding: EdgeInsets.only(top: 50.w,right: 270.w,left: 10.w),
         child: SizedBox(width: 60.w, height: 30.w, child: ElevatedButton(onPressed: () async {
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Loginpage()));},
-            style: ButtonStyle( shape: MaterialStateProperty.all<RoundedRectangleBorder>( RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.r)) ),backgroundColor: MaterialStateProperty.all<Color>(Colors.blue,),),
+            style: ButtonStyle( shape: WidgetStateProperty.all<RoundedRectangleBorder>( RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.r)) ),backgroundColor: WidgetStateProperty.all<Color>(Colors.blue,),),
              child:  FittedBox(child: Text('B',style: TextStyle(fontFamily: 'SF compact',color: Colors.white, fontSize: 20.sp,))),),),),),
 
         Center(child: Padding( padding:  EdgeInsets.only(top: 130.w),
-          child: SizedBox(height: 270.w,width: _mediaQuery.size.width * 0.9,child: Container(decoration: BoxDecoration(color: Colors.white38, borderRadius: BorderRadius.circular(20.r)),
+          child: SizedBox(height: 270.w,width: mediaQuery.size.width * 0.9,child: Container(decoration: BoxDecoration(color: Colors.white38, borderRadius: BorderRadius.circular(20.r)),
               child: Column(
                 children: [ Padding(padding: EdgeInsets.only(left: 40.w,right: 50.w,top: 40.w),
                   child: Text('You will receive a Email to Reset your password',style: TextStyle( fontFamily: 'SF compact', fontSize: 20.sp, fontWeight: FontWeight.bold, color: Colors.black, letterSpacing: 1 )),),
@@ -78,7 +77,7 @@ class ForpassState extends State<Forpass>{
                   SafeArea(child: Column(
                     children: [ Padding( padding: EdgeInsets.only(left: 40.w,right: 40.w),
                       child: Form(key: _formKey,
-                        child: Column(children: <Widget> [ SizedBox(height: _mediaQuery.size.width * 0.17,
+                        child: Column(children: <Widget> [ SizedBox(height: mediaQuery.size.width * 0.17,
                           child: TextFormField(cursorColor: Colors.blue,cursorHeight: 17.w,cursorWidth: 10.w,decoration: ShapeOfBox().textInputDecoration('Email','Enter your Email'),controller: _emailController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -105,6 +104,7 @@ class ForpassState extends State<Forpass>{
                           await FirebaseAuth.instance.sendPasswordResetEmail(
                               email: _emailController.text.trim());
 
+                          if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Stack(clipBehavior: Clip.none,
                             children: [ Container(padding: const EdgeInsets.all(16),height: 90.h,decoration: BoxDecoration(color: const Color(0xFF2d6a4f),borderRadius: BorderRadius.all(Radius.circular(20.r)),),
                                 child:  Row( children: [ SizedBox(width: 48.w,),Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,14 +112,15 @@ class ForpassState extends State<Forpass>{
                                     Text("Check your Email to reset your password",style: TextStyle(fontFamily: 'SF compact',fontSize: 15.sp,color: Colors.white),maxLines: 2,overflow: TextOverflow.ellipsis,),],)),
                                 ],
                                 )),
-                              Positioned(bottom: 0.h,child: ClipRRect( borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20.r)),child: SvgPicture.asset("Assets/Images/bubbles.svg",height: 48.h,width: 40.w,color: const Color(0xFF1e4634),))),
-                              Positioned(top: -16.h,left: 0.w,child: SvgPicture.asset("Assets/Images/fail.svg",height: 40.h,color: const Color(0xFF1e4634),)),
+                              Positioned(bottom: 0.h,child: ClipRRect( borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20.r)),child: SvgPicture.asset("Assets/Images/bubbles.svg",height: 48.h,width: 40.w,colorFilter: const ColorFilter.mode(Color(0xFF1e4634), BlendMode.srcIn),))),
+                              Positioned(top: -16.h,left: 0.w,child: SvgPicture.asset("Assets/Images/fail.svg",height: 40.h,colorFilter: const ColorFilter.mode(Color(0xFF1e4634), BlendMode.srcIn),)),
 
                             ],
                           ),behavior: SnackBarBehavior.floating,backgroundColor: Colors.transparent,elevation: 0,));
 
                         } on FirebaseAuthException catch (error)
                         {
+                          if (!context.mounted) return;
 
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Stack(clipBehavior: Clip.none,
                             children: [ Container(padding: const EdgeInsets.all(16),height: 90.h,decoration: BoxDecoration(color: Colors.red,borderRadius: BorderRadius.all(Radius.circular(20.r)),),
@@ -128,7 +129,7 @@ class ForpassState extends State<Forpass>{
                                       Text(error.message!,style:  TextStyle(fontFamily: 'SF compact',fontSize: 14.sp,color: Colors.white),maxLines: 2,overflow: TextOverflow.ellipsis,),],)),
                                     ],
                                   )),
-                              Positioned(bottom: 0.h,child: ClipRRect( borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20.r)),child: SvgPicture.asset("Assets/Images/bubbles.svg",height: 48.h,width: 40.w,color: const Color(0xFF801336),))),
+                              Positioned(bottom: 0.h,child: ClipRRect( borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20.r)),child: SvgPicture.asset("Assets/Images/bubbles.svg",height: 48.h,width: 40.w,colorFilter: const ColorFilter.mode(Color(0xFF801336), BlendMode.srcIn),))),
                               Positioned(top: -16.h,left: 0.w,child: Stack(alignment: Alignment.center,
                                 children: [
                                   SvgPicture.asset("Assets/Images/fail.svg",height: 40.h,),
@@ -142,7 +143,7 @@ class ForpassState extends State<Forpass>{
                         setState(() {});
                       }
                     },
-                      style: ButtonStyle( shape: MaterialStateProperty.all<RoundedRectangleBorder>( RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r))),backgroundColor: MaterialStateProperty.all<Color>(Colors.blue,),),
+                      style: ButtonStyle( shape: WidgetStateProperty.all<RoundedRectangleBorder>( RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r))),backgroundColor: WidgetStateProperty.all<Color>(Colors.blue,),),
                       child: AutoSizeText('Reset Password', maxLines: 1,style: TextStyle(color: Colors.white,fontFamily: 'SF compact', fontSize: 20.sp),textAlign: TextAlign.center,),
 
 

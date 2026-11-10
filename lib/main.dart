@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
-import 'package:proton/Signup.dart';
+import 'package:proton/signup.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -48,10 +48,10 @@ class Loginpage extends StatefulWidget {
 
 
 class LoginpageState extends State<Loginpage> {
-  RegExp pass_Valid = RegExp(r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)");
+  RegExp passValid = RegExp(r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)");
   bool validatePassword(String pass){
     String password = pass.trim();
-    if(pass_Valid.hasMatch(password)){
+    if(passValid.hasMatch(password)){
       return true;
     }else{
       return false;
@@ -68,9 +68,16 @@ class LoginpageState extends State<Loginpage> {
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context);
-    var _mediaQuery = MediaQuery.of(context);
-    return WillPopScope(
-      onWillPop: () => _onBackButtonPressed(context),
+    var mediaQuery = MediaQuery.of(context);
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
+        if (didPop) return;
+        final bool shouldPop = await _onBackButtonPressed(context);
+        if (shouldPop && context.mounted) {
+          Navigator.of(context).pop();
+        }
+      },
       child: KeyboardDismisser( gestures: const [
         GestureType.onVerticalDragDown,
         GestureType.onTap,
@@ -78,7 +85,7 @@ class LoginpageState extends State<Loginpage> {
         child: Scaffold(body: Stack(children: [
           Container(decoration: const BoxDecoration(image: DecorationImage(image: AssetImage('Assets/Images/b2.jpg'), fit: BoxFit.cover)),),
           SingleChildScrollView(child: Column(children: [ Center(child: Padding(padding: EdgeInsets.only(top: 200.h,),
-            child: SizedBox(height: 370.w,width: _mediaQuery.size.width * 0.9,child: Container(decoration: BoxDecoration(color: Colors.white38, borderRadius: BorderRadius.circular(20.r)),
+            child: SizedBox(height: 370.w,width: mediaQuery.size.width * 0.9,child: Container(decoration: BoxDecoration(color: Colors.white38, borderRadius: BorderRadius.circular(20.r)),
               child: Padding(padding: EdgeInsets.only(bottom: 18.w),
                 child: SingleChildScrollView (physics: const BouncingScrollPhysics(),
                   child: Column(children: [ Padding(padding:  EdgeInsets.only(right: 200.w, top: 20.h,left: 20.w,), child: Text('Login',style: TextStyle(fontFamily: 'SF compact',fontSize: 35.sp, fontWeight: FontWeight.bold, color: Colors.black, letterSpacing: 1,)),),
@@ -87,7 +94,7 @@ class LoginpageState extends State<Loginpage> {
                     SafeArea(
                       child: Form( key: _formKey,
                         child: Column(children: <Widget>[ Padding(padding: EdgeInsets.only(left: 20.w, right: 20.w,),
-                          child: SizedBox(height: _mediaQuery.size.width * 0.17,
+                          child: SizedBox(height: mediaQuery.size.width * 0.17,
                             child: TextFormField(cursorColor: Colors.blue,cursorHeight: 17.w,cursorWidth: 10.w,decoration: ShapeOfBox().textInputDecoration('Email' ,'Enter your Email',), controller: _emailController,autofillHints: const [AutofillHints.email],
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -103,7 +110,7 @@ class LoginpageState extends State<Loginpage> {
                             ),
                           ),),
                           Padding(padding: EdgeInsets.only(top: 5.h, left: 20.w, right: 20.w),
-                            child: SizedBox(height: _mediaQuery.size.width * 0.17,
+                            child: SizedBox(height: mediaQuery.size.width * 0.17,
                               child: TextFormField( obscureText: true,cursorColor: Colors.blue,cursorHeight: 17.w,cursorWidth: 10.w,decoration: ShapeOfBox().textInputDecoration('Password', 'Enter Password',), controller: _passwordController,
                                 validator: (value){
                                   if(value!.isEmpty){
@@ -137,7 +144,7 @@ class LoginpageState extends State<Loginpage> {
                     Padding(
                       padding:  EdgeInsets.only(left: 235.w,right: 20.w),
                       child:  ElevatedButton(onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Forpass()));},
-                        style: ButtonStyle(shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r))),backgroundColor: MaterialStateProperty.all<Color>(Colors.blue,),),
+                        style: ButtonStyle(shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r))),backgroundColor: WidgetStateProperty.all<Color>(Colors.blue,),),
                         child: FittedBox(child: AutoSizeText('Fp', style: TextStyle(color: Colors.white,fontFamily: 'SF compact', fontSize: 14.sp,fontWeight: FontWeight.bold),)),),
                     ),
 
@@ -147,7 +154,7 @@ class LoginpageState extends State<Loginpage> {
                         child: ElevatedButton(onPressed: ()
                         {
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Signup()));},
-                          style: ButtonStyle(shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(17.r))),backgroundColor: MaterialStateProperty.all<Color>(
+                          style: ButtonStyle(shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(17.r))),backgroundColor: WidgetStateProperty.all<Color>(
                             Colors.blue, // Change this color to the desired color
                           ),),
                           child: Text('Create an account', style: TextStyle(color: Colors.white,fontFamily: 'SF compact', fontSize: 20.sp),),)),
@@ -176,6 +183,7 @@ class LoginpageState extends State<Loginpage> {
                           email: _emailController.text,
                           password: _passwordController.text).
                       then((value) {
+                        if (!context.mounted) return;
                         showDialog(
                             context: context,
                             builder: (context){
@@ -185,8 +193,7 @@ class LoginpageState extends State<Loginpage> {
                       errorMessage = '';
                     } on FirebaseAuthException catch (error)
                     {
-
-
+                      if (!context.mounted) return;
 
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Stack(clipBehavior: Clip.none,
                         children: [ Container(padding: const EdgeInsets.all(16),height: 90.h,decoration: BoxDecoration(color: Colors.red,borderRadius: BorderRadius.all(Radius.circular(20.r)),),
@@ -195,7 +202,7 @@ class LoginpageState extends State<Loginpage> {
                                 Text(error.message!,style: TextStyle(fontFamily: 'SF compact',fontSize: 14.sp,color: Colors.white),maxLines: 2,overflow: TextOverflow.ellipsis,),],)),
                             ],
                             )),
-                          Positioned(bottom: 0,child: ClipRRect( borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20.r)),child: SvgPicture.asset("Assets/Images/bubbles.svg",height: 48.h,width: 40.w,color: const Color(0xFF801336),))),
+                          Positioned(bottom: 0,child: ClipRRect( borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20.r)),child: SvgPicture.asset("Assets/Images/bubbles.svg",height: 48.h,width: 40.w,colorFilter: const ColorFilter.mode(Color(0xFF801336), BlendMode.srcIn),))),
                           Positioned(top: -10,left: 0,child: Stack(alignment: Alignment.center,
                             children: [
                               SvgPicture.asset("Assets/Images/fail.svg",height: 40.h,),
@@ -213,9 +220,9 @@ class LoginpageState extends State<Loginpage> {
 
                 },
 
-                  style: ButtonStyle(shape: MaterialStateProperty.all<
+                  style: ButtonStyle(shape: WidgetStateProperty.all<
                       RoundedRectangleBorder>(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(200.r))),backgroundColor: MaterialStateProperty.all<Color>(Colors.blue,),),
+                      borderRadius: BorderRadius.circular(200.r))),backgroundColor: WidgetStateProperty.all<Color>(Colors.blue,),),
 
 
 

@@ -34,7 +34,7 @@ class LogoutState extends State<Logout> {
     return Scaffold(body: Stack(children: [ Container(decoration: const BoxDecoration(image: DecorationImage(image: AssetImage('Assets/Images/b2.jpg'),fit: BoxFit.cover))),
     Center(
       child: SizedBox(height: 30.h,
-        child: ElevatedButton(onPressed: (){ FirebaseAuth.instance.signOut().then((value) { Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Loginpage())); }); },
+        child: ElevatedButton(onPressed: (){ FirebaseAuth.instance.signOut().then((value) { if (!context.mounted) return; Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Loginpage())); }); },
             child: Column(children: [ Text('Log out',style: TextStyle(fontFamily: 'SF compact',color: Colors.white70,fontSize: 18.sp),), ],)),
       ),
     )],),);
